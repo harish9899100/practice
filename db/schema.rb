@@ -22,12 +22,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
     t.index ["employee_id"], name: "index_attendance_records_on_employee_id"
   end
 
-  create_table "categories", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
+  # create_table "categories", force: :cascade do |t|
+  #   t.datetime "created_at", null: false
+  #   t.text "description"
+  #   t.string "name"
+  #   t.datetime "updated_at", null: false
+  # end
 
   create_table "departments", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -53,13 +53,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
     t.index ["position_id"], name: "index_employees_on_position_id"
   end
 
-  create_table "inventory_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "product"
-    t.integer "quantity_change"
-    t.text "reason"
-    t.datetime "updated_at", null: false
-  end
+  # create_table "inventory_logs", force: :cascade do |t|
+  #   t.datetime "created_at", null: false
+  #   t.string "product"
+  #   t.integer "quantity_change"
+  #   t.text "reason"
+  #   t.datetime "updated_at", null: false
+  # end
 
   create_table "organizations", force: :cascade do |t|
     t.datetime "created_at", null: false

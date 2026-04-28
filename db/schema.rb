@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_28_081921) do
   create_table "attendance_records", force: :cascade do |t|
     t.datetime "clock_in_at"
     t.datetime "clock_out_at"
@@ -22,12 +22,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
     t.index ["employee_id"], name: "index_attendance_records_on_employee_id"
   end
 
-  # create_table "categories", force: :cascade do |t|
-  #   t.datetime "created_at", null: false
-  #   t.text "description"
-  #   t.string "name"
-  #   t.datetime "updated_at", null: false
-  # end
+  create_table "categories", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "name"
+    t.datetime "updated_at", null: false
+  end
 
   create_table "departments", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -53,13 +53,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
     t.index ["position_id"], name: "index_employees_on_position_id"
   end
 
-  # create_table "inventory_logs", force: :cascade do |t|
-  #   t.datetime "created_at", null: false
-  #   t.string "product"
-  #   t.integer "quantity_change"
-  #   t.text "reason"
-  #   t.datetime "updated_at", null: false
-  # end
+  create_table "inventory_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "product"
+    t.integer "quantity_change"
+    t.text "reason"
+    t.datetime "updated_at", null: false
+  end
 
   create_table "organizations", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -67,6 +67,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
     t.string "settings"
     t.string "slug"
     t.datetime "updated_at", null: false
+  end
+
+  create_table "payslips", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "employee_id", null: false
+    t.decimal "net_pay"
+    t.date "period_month"
+    t.integer "status"
+    t.decimal "total_allowances"
+    t.decimal "total_deductions"
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_payslips_on_employee_id"
   end
 
   create_table "positions", force: :cascade do |t|
@@ -79,17 +91,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
     t.index ["department_id"], name: "index_positions_on_department_id"
   end
 
-  # create_table "products", force: :cascade do |t|
-  #   t.boolean "active"
-  #   t.datetime "created_at", null: false
-  #   t.boolean "featured"
-  #   t.string "name"
-  #   t.integer "price"
-  #   t.string "sku"
-  #   t.integer "stock_count"
-  #   t.datetime "updated_at", null: false
-  #   t.index ["sku"], name: "index_products_on_sku", unique: true
-  # end
+  create_table "products", force: :cascade do |t|
+    t.boolean "active"
+    t.datetime "created_at", null: false
+    t.boolean "featured"
+    t.string "name"
+    t.integer "price"
+    t.string "sku"
+    t.integer "stock_count"
+    t.datetime "updated_at", null: false
+    t.index ["sku"], name: "index_products_on_sku", unique: true
+  end
 
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -103,6 +115,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
   add_foreign_key "departments", "organizations"
   add_foreign_key "employees", "departments"
   add_foreign_key "employees", "positions"
+  add_foreign_key "payslips", "employees"
   add_foreign_key "positions", "departments"
   add_foreign_key "users", "employees"
 end

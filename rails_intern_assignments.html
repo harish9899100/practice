@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rails Models — Intern Assignments</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0f11;
+    --bg-2: #14161a;
+    --bg-3: #1c1f25;
+    --bg-4: #23272f;
+    --border: rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.13);
+    --text: #e8e6e0;
+    --text-2: #8b8a84;
+    --text-3: #55534e;
+    --accent: #e8c547;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --serif: 'Instrument Serif', serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    background: rgba(14,15,17,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+  .site-header .logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+  .site-header .logo span { color: var(--text-2); }
+  .header-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-3);
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 72px 2rem 56px;
+    max-width: 860px;
+    margin: 0 auto;
+  }
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-desc {
+    font-size: 15px;
+    color: var(--text-2);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 22px;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── NAV TABS ── */
+  .nav-bar {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    position: sticky;
+    top: 56px;
+    z-index: 90;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-inner {
+    display: flex;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  .nav-tab {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 14px 18px;
+    border: none;
+    background: none;
+    color: var(--text-3);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .nav-tab:hover { color: var(--text-2); }
+  .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 100px;
+  }
+
+  /* ── ASSIGNMENT PANEL ── */
+  .assignment { display: none; padding-top: 52px; animation: fadeUp 0.25s ease; }
+  .assignment.visible { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .a-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .a-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-3);
+    margin-bottom: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .a-title {
+    font-family: var(--serif);
+    font-size: 34px;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .a-badge {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-top: 8px;
+    align-self: flex-start;
+  }
+
+  .context-block {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.7;
+  }
+  .context-block strong { color: var(--text); font-weight: 500; }
+
+  /* ── SKELETON ── */
+  .section-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .code-block {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: #a8c6a8;
+    line-height: 1.8;
+    margin-bottom: 36px;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-block::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 10px;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .code-comment { color: var(--text-3); }
+  .code-class { color: #e8c98a; }
+  .code-keyword { color: #c89ae8; }
+
+  /* ── TASKS ── */
+  .tasks-grid { margin-bottom: 36px; }
+  .task-item {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+    transition: background 0.1s;
+  }
+  .task-item:first-child { border-top: 1px solid var(--border); }
+  .task-item:hover { background: rgba(255,255,255,0.02); margin: 0 -12px; padding: 16px 12px; }
+  .task-num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    padding-top: 1px;
+    font-weight: 500;
+  }
+  .task-text {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+  .task-text strong { color: var(--text); font-weight: 500; }
+
+  /* ── DELIVERABLES ── */
+  .deliverables {
+    background: var(--bg-2);
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-top: 8px;
+  }
+  .deliverables-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .deliverables-icon {
+    width: 28px;
+    height: 28px;
+    background: rgba(232, 197, 71, 0.12);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .deliverables-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .deliverables ul { list-style: none; }
+  .deliverables li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .deliverables li:last-child { border-bottom: none; padding-bottom: 0; }
+  .deliverables li::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border-radius: 3px;
+    border: 1px solid var(--border-strong);
+    margin-top: 2px;
+  }
+
+  /* ── BADGE COLORS ── */
+  .b-purple { background: rgba(139,92,246,0.12); color: #c4b5fd; }
+  .b-teal   { background: rgba(20,184,166,0.12); color: #5eead4; }
+  .b-blue   { background: rgba(59,130,246,0.12); color: #93c5fd; }
+  .b-coral  { background: rgba(249,115,22,0.12); color: #fdba74; }
+  .b-amber  { background: rgba(245,158,11,0.12); color: #fcd34d; }
+  .b-green  { background: rgba(34,197,94,0.12);  color: #86efac; }
+  .b-pink   { background: rgba(236,72,153,0.12); color: #f9a8d4; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    margin-bottom: 0;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 2rem;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .hero { padding: 48px 1.25rem 40px; }
+    .main { padding: 0 1.25rem 80px; }
+    .nav-inner { padding: 0 1.25rem; }
+    .site-header { padding: 0 1.25rem; }
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">shopcore<span>/</span>assignments</div>
+  <div class="header-meta">rails · models track · 7 guides</div>
+</header>
+
+<div class="progress-bar">
+  <div class="progress-fill" id="progressFill" style="width: 14.28%"></div>
+</div>
+
+<section class="hero">
+  <div class="hero-eyebrow">Intern Coding Assignment Series</div>
+  <h1>Rails Models<br><em>from scratch.</em></h1>
+  <p class="hero-desc">Seven real-world assignments built around a single e-commerce backend. Complete them in order — each one builds on the last.</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">07</span><span class="stat-label">Assignments</span></div>
+    <div class="stat"><span class="stat-num">35</span><span class="stat-label">Tasks total</span></div>
+    <div class="stat"><span class="stat-num">01</span><span class="stat-label">Domain — e-commerce</span></div>
+  </div>
+</section>
+
+<nav class="nav-bar">
+  <div class="nav-inner" id="navInner"></div>
+</nav>
+
+<main class="main" id="mainContent"></main>
+
+<footer class="site-footer">
+  ShopCore · Rails Models Track · Good luck — read the docs, not the answers.
+</footer>
+
+<script>
+const assignments = [
+  {
+    num: "01", title: "Active Record Basics", badge: "b-purple", badgeLabel: "Guide 1",
+    context: "You're starting the ShopCore backend from scratch. Your first job is to get two core entities into the database and prove you can work with them end-to-end from the Rails console.",
+    schema: `<span class="code-comment"># Two models to create</span>
+<span class="code-class">Product</span>  — name, price, stock_count, active
+<span class="code-class">Category</span> — name, description`,
+    tasks: [
+      "Generate both models with the correct column types and run the migrations.",
+      "In the Rails console, create three products using three different approaches. Observe what happens when required data is missing.",
+      "Retrieve all products, find one by its id, and look up a specific product by name.",
+      "Change the price of one product using two different update techniques, then permanently remove another product from the database.",
+      "Inspect <code style='font-family:var(--mono);font-size:12px;color:#a8c6a8;'>Product.column_names</code> and write a short comment in the model file explaining how Rails knows which table to use."
+    ],
+    deliverable: [
+      "Two model files + two migration files",
+      "seeds.rb with 5 products and 3 categories",
+      "Console transcript showing all create, read, update, and delete operations"
+    ]
+  },
+  {
+    num: "02", title: "Active Record Migrations", badge: "b-teal", badgeLabel: "Guide 2",
+    context: "The schema wasn't complete at launch. A SKU field was missed, marketing wants a featured flag, and ops needs a full inventory change log. Evolve the schema without touching existing migrations.",
+    schema: `<span class="code-comment"># Changes needed</span>
+products      — add sku (unique), add featured flag
+<span class="code-keyword">new table</span>     — inventory_logs (product, quantity change, reason, timestamp)`,
+    tasks: [
+      "Add a sku column to products that cannot be null and must be unique. Add a featured boolean column with a sensible default.",
+      "Create an InventoryLog model that tracks which product changed, by how much, why, and when. Add a database-level index on the product reference.",
+      "Write a separate migration — no model class — that fills in a generated SKU value for every existing product row.",
+      "Roll back the InventoryLog migration, then re-apply it. Verify the final state with the migrate status command.",
+      "Add a database-level constraint that prevents a product's price from being stored as zero or negative."
+    ],
+    deliverable: [
+      "Four migration files with correct timestamps",
+      "schema.rb reflecting the final state",
+      "Terminal output of db:migrate:status showing all UP"
+    ]
+  },
+  {
+    num: "03", title: "Active Record Validations", badge: "b-blue", badgeLabel: "Guide 3",
+    context: "Bad data is reaching the database — blank names, zero prices, duplicate customer emails. The team has decided all data integrity rules must live in the model layer, not in the controller.",
+    schema: `<span class="code-keyword">class</span> <span class="code-class">Product</span> < ApplicationRecord
+  <span class="code-comment"># your validations here</span>
+<span class="code-keyword">end</span>
+
+<span class="code-keyword">class</span> <span class="code-class">Customer</span> < ApplicationRecord
+  <span class="code-comment"># your validations here</span>
+<span class="code-keyword">end</span>`,
+    tasks: [
+      "Validate Product name (must exist, length between 2 and 100 characters), price (must exist and be greater than zero), stock_count (whole number, cannot be negative), and sku (must exist and be unique regardless of case).",
+      "Create a Customer model with email, first_name, last_name, phone, and sms_opt_in. Validate email presence, uniqueness, and correct format.",
+      "Write a custom validation method on Product that rejects any name containing the word 'discontinued'.",
+      "Make phone required on Customer, but only when sms_opt_in is true.",
+      "In the console, try saving records that violate each rule and inspect the resulting error messages."
+    ],
+    deliverable: [
+      "Updated Product and Customer model files",
+      "A test file covering at least 6 validation scenarios (valid and invalid)",
+      "Console output showing errors.full_messages for two different invalid records"
+    ]
+  },
+  {
+    num: "04", title: "Active Record Callbacks", badge: "b-coral", badgeLabel: "Guide 4",
+    context: "Three things should happen automatically — no manual steps allowed. SKUs must self-generate on new products, every price change must be recorded, and stock adjustments must leave an audit trail.",
+    schema: `<span class="code-keyword">class</span> <span class="code-class">Product</span> < ApplicationRecord
+  <span class="code-comment"># callbacks go here — keep each one thin</span>
+<span class="code-keyword">end</span>`,
+    tasks: [
+      "Before a new product is validated, automatically generate a SKU in the format PRD-XXXXXX if none was provided.",
+      "Before any save, detect whether the price has changed and if so, write a PriceHistory record capturing the old and new values.",
+      "After a successful update, detect whether stock_count changed and write an InventoryLog recording the difference.",
+      "Prevent a product from being deleted if it still has stock. The deletion should be blocked and the reason should be accessible through the errors object.",
+      "Add a callback that fires after the database transaction is fully committed (not just after save). Stub it with a log message and write a comment explaining why the timing difference matters."
+    ],
+    deliverable: [
+      "Updated Product model with all callbacks",
+      "PriceHistory and InventoryLog model files",
+      "Console transcript showing auto-SKU on create, and a PriceHistory row appearing after a price update"
+    ]
+  },
+  {
+    num: "05", title: "Active Record Associations", badge: "b-amber", badgeLabel: "Guide 5",
+    context: "ShopCore now needs a full order system. Customers place orders, orders contain line items, line items reference products, and every product belongs to a category. Model all of it at the database and Ruby layers.",
+    schema: `<span class="code-class">Customer</span> -&lt; <span class="code-class">Order</span> -&lt; <span class="code-class">OrderItem</span> &gt;- <span class="code-class">Product</span>
+<span class="code-class">Product</span>  &gt;- <span class="code-class">Category</span>
+<span class="code-class">Product</span>  -1 <span class="code-class">Inventory</span>`,
+    tasks: [
+      "Set up the full order chain: Customer → Order → OrderItem → Product. Add the correct belongs_to and has_many declarations and ensure foreign key columns and indexes exist in the database.",
+      "Associate Product with Category (a product must have a category) and add a one-to-one relationship between Product and Inventory.",
+      "Set up a shortcut so you can call customer.products and get back all products that customer has ever ordered, without writing any SQL.",
+      "Configure orders so that deleting an order automatically removes its line items. Test what happens when you try to delete a customer who has existing orders.",
+      "Use the association's build method to add a line item to an order without saving immediately. Explain in a comment what separates build from create in this context."
+    ],
+    deliverable: [
+      "All model files with complete association declarations",
+      "Migration file showing all foreign keys and indexes",
+      "Console session showing customer.products returning the correct data"
+    ]
+  },
+  {
+    num: "06", title: "Active Record Query Interface", badge: "b-green", badgeLabel: "Guide 6",
+    context: "The admin dashboard needs real reporting — low stock alerts, revenue breakdowns, top customers. All of it must be written using Rails query methods. No filtering data in Ruby after fetching it.",
+    schema: `<span class="code-comment"># Interfaces to build</span>
+<span class="code-class">Product</span>.low_stock
+<span class="code-class">Product</span>.by_category(id)
+<span class="code-class">Customer</span>.top_spenders(limit)`,
+    tasks: [
+      "Add a low_stock scope to Product (fewer than 5 units) and a by_category(id) scope. Verify they can be chained together.",
+      "Write a query that returns the 20 largest orders from the past 30 days, most expensive first.",
+      "Write a single query that returns each category along with its product count and average product price.",
+      "Find the top 10 customers ranked by their total spend across all orders. The result should be Customer records, not raw ids or numbers.",
+      "Fetch 10 recent orders along with their line items and products in a single efficient query. Show the query log before and after to confirm the N+1 is gone."
+    ],
+    deliverable: [
+      "All scopes and class methods defined in the model files",
+      "A query_examples.rb file with each query and its expected output as a comment",
+      "The generated SQL (.to_sql) for at least 3 of the queries"
+    ]
+  },
+  {
+    num: "07", title: "Active Model Basics", badge: "b-pink", badgeLabel: "Guide 7",
+    context: "Checkout needs a form object that validates billing details and computes totals — but it has no database table. It should behave exactly like an ActiveRecord model in validations and error handling, just without persistence.",
+    schema: `<span class="code-keyword">class</span> <span class="code-class">CheckoutForm</span>
+  <span class="code-keyword">include</span> ActiveModel::Model
+  <span class="code-keyword">include</span> ActiveModel::Attributes
+  <span class="code-comment"># no table, full model behaviour</span>
+<span class="code-keyword">end</span>`,
+    tasks: [
+      "Define the form with these attributes: email, full_name, address, promo_code, and agree_to_terms (boolean, defaults to false).",
+      "Add validations for each field. email must be present and correctly formatted. full_name must be at least 2 characters. agree_to_terms must be accepted.",
+      "Write a custom validation that checks whether the promo_code is valid (use a hardcoded list or a PromoCode model). Add a descriptive error if it is not.",
+      "Add a subtotal method that accepts an array of cart line items and returns the correct total. Add a discount_amount method that applies 10% off when a valid promo code is present.",
+      "In the console, test the form with valid data, with missing fields, and with a bad promo code. Confirm that valid?, errors.full_messages, and the calculation methods all work as expected. Add a comment to the file answering: when would you choose this over a regular ActiveRecord model?"
+    ],
+    deliverable: [
+      "checkout_form.rb with all attributes, validations, and methods",
+      "Console output showing a valid form, an invalid form with errors, and correct subtotal and discount output",
+      "The written answer comment inside the file"
+    ]
+  }
+];
+
+function renderNav() {
+  const nav = document.getElementById('navInner');
+  assignments.forEach((a, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-tab' + (i === 0 ? ' active' : '');
+    btn.textContent = `${a.num} ${a.title.split(' ').pop()}`;
+    btn.dataset.index = i;
+    btn.addEventListener('click', () => switchTo(i));
+    nav.appendChild(btn);
+  });
+}
+
+function switchTo(index) {
+  document.querySelectorAll('.nav-tab').forEach((b, i) => b.classList.toggle('active', i === index));
+  document.querySelectorAll('.assignment').forEach((el, i) => el.classList.toggle('visible', i === index));
+  document.getElementById('progressFill').style.width = `${((index + 1) / assignments.length) * 100}%`;
+  window.scrollTo({ top: document.querySelector('.nav-bar').offsetTop - 56, behavior: 'smooth' });
+}
+
+function buildHTML() {
+  const main = document.getElementById('mainContent');
+  assignments.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'assignment' + (i === 0 ? ' visible' : '');
+
+    const tasksHtml = a.tasks.map((t, ti) =>
+      `<div class="task-item">
+        <div class="task-num">0${ti + 1}</div>
+        <div class="task-text">${t}</div>
+      </div>`
+    ).join('');
+
+    const deliverableHtml = a.deliverable.map(d => `<li>${d}</li>`).join('');
+
+    div.innerHTML = `
+      <div class="a-header">
+        <div>
+          <div class="a-number">Assignment ${a.num} of 07</div>
+          <div class="a-title">${a.title}</div>
+        </div>
+        <span class="a-badge ${a.badge}">${a.badgeLabel}</span>
+      </div>
+
+      <div class="context-block">${a.context}</div>
+
+      <div class="section-title">Starting point</div>
+      <div class="code-block" data-lang="ruby"><pre>${a.schema}</pre></div>
+
+      <div class="section-title">Tasks</div>
+      <div class="tasks-grid">${tasksHtml}</div>
+
+      <div class="section-title">Deliverables</div>
+      <div class="deliverables">
+        <div class="deliverables-header">
+          <div class="deliverables-icon">✦</div>
+          <div class="deliverables-title">What to submit</div>
+        </div>
+        <ul>${deliverableHtml}</ul>
+      </div>
+    `;
+    main.appendChild(div);
+  });
+}
+
+renderNav();
+buildHTML();
+</script>
+</body>
+</html>

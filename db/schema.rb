@@ -10,7 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_28_075957) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_28_081712) do
+  create_table "attendance_records", force: :cascade do |t|
+    t.datetime "clock_in_at"
+    t.datetime "clock_out_at"
+    t.datetime "created_at", null: false
+    t.date "date"
+    t.integer "employee_id", null: false
+    t.text "notes"
+    t.datetime "updated_at", null: false
+    t.index ["employee_id"], name: "index_attendance_records_on_employee_id"
+  end
+
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -88,6 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_075957) do
     t.index ["employee_id"], name: "index_users_on_employee_id"
   end
 
+  add_foreign_key "attendance_records", "employees"
   add_foreign_key "departments", "organizations"
   add_foreign_key "employees", "departments"
   add_foreign_key "employees", "positions"

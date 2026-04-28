@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  employee: one
+  period_month: 2026-04-28
+  total_allowances: 9.99
+  total_deductions: 9.99
+  net_pay: 9.99
+  status: 1
+
+two:
+  employee: two
+  period_month: 2026-04-28
+  total_allowances: 9.99
+  total_deductions: 9.99
+  net_pay: 9.99
+  status: 1

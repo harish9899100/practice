@@ -22,13 +22,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081921) do
     t.index ["employee_id"], name: "index_attendance_records_on_employee_id"
   end
 
-  create_table "categories", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.text "description"
-    t.string "name"
-    t.datetime "updated_at", null: false
-  end
-
   create_table "departments", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
@@ -51,14 +44,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081921) do
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_employees_on_department_id"
     t.index ["position_id"], name: "index_employees_on_position_id"
-  end
-
-  create_table "inventory_logs", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "product"
-    t.integer "quantity_change"
-    t.text "reason"
-    t.datetime "updated_at", null: false
   end
 
   create_table "organizations", force: :cascade do |t|
@@ -89,18 +74,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_28_081921) do
     t.string "title"
     t.datetime "updated_at", null: false
     t.index ["department_id"], name: "index_positions_on_department_id"
-  end
-
-  create_table "products", force: :cascade do |t|
-    t.boolean "active"
-    t.datetime "created_at", null: false
-    t.boolean "featured"
-    t.string "name"
-    t.integer "price"
-    t.string "sku"
-    t.integer "stock_count"
-    t.datetime "updated_at", null: false
-    t.index ["sku"], name: "index_products_on_sku", unique: true
   end
 
   create_table "users", force: :cascade do |t|

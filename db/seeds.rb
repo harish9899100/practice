@@ -98,4 +98,4 @@ AttendanceRecord.create!(
   notes: "Late arrival"
 )
 
-puts "Seeding completed successfully!"
+puts "Seeding completed successfully!"AdminUser.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
